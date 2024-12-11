@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import Main from '@/view/Main.vue';
-import MealKit from '@/view/MealKit.vue';
-import LaundrySupplies from '@/view/LaundrySupplies.vue';
-import User from '@/view/User.vue';
-import HomeAppliance from '@/view/HomeAppliance.vue';
-import Order from '@/view/Order.vue'
+import Main from '@/view/MainView.vue';
+import MealKit from '@/view/MealKitView.vue';
+import LaundrySupplies from '@/view/LaundrySuppliesView.vue';
+import User from '@/view/UserView.vue';
+import HomeAppliance from '@/view/HomeApplianceView.vue';
+import Order from '@/view/OrderView.vue'
 
 const routes = [
   { path: '/', 

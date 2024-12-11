@@ -1,3 +1,10 @@
+<template>
+  <div class="chart-container">
+    <h2>2024년 월별 총 매출액</h2>
+    <canvas ref="chartRef"></canvas>
+  </div>
+</template>
+
 <script>
 import { ref, onMounted } from "vue";
 import { Chart, registerables } from "chart.js"; // 수정된 import
@@ -88,12 +95,6 @@ export default {
 };
 </script>
 
-<template>
-  <div class="chart-container">
-    <h2>2024년 월별 총 매출액</h2>
-    <canvas ref="chartRef"></canvas>
-  </div>
-</template>
 
 <style scoped>
 .chart-container {

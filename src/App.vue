@@ -32,6 +32,7 @@ export default {
   flex-direction: row;
   background-color: #FFF7EF;
   border-radius: 10px;
+  height: 860px;
 }
 
 .main {

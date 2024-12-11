@@ -1,3 +1,59 @@
+  <template>
+    <div class="cart">
+      <h1>장바구니</h1>
+      <button class="clear-button" @click="allClear">전체 삭제</button>
+    
+      <div class="carts">
+        <div class="mealkit-cart">
+          <h2>밀키트</h2>
+          <div class="cart-list">
+            <li v-for="item in mealKitCartItem" :key="item.id" class="cart-item">
+              <div class="item-info">
+                <span>{{ item.mealKitName }}</span>
+                <div class="quantity-control">
+                  <button @click="() => decreaseQuantity(item.id, true)">-</button>
+                  <span>{{ mealKitQuantities[item.id] || 1 }}</span>
+                  <button @click="() => increaseQuantity(item.id, true)">+</button>
+                </div>
+              </div>
+              <div class="setting">
+                <button class="delete-button" @click="() => outMealKitCart(item.id)">×</button>
+                <span>{{ (item.mealKitPrice * (mealKitQuantities[item.id] || 1)).toLocaleString() }}원</span>
+              </div>
+            </li>
+          </div>
+        </div>
+      
+        <div class="laundry-cart">
+          <h2>세탁용품</h2>
+          <div class="cart-list">
+            <li v-for="item in laundryCartItem" :key="item.id" class="cart-item">
+              <div class="item-info">
+                <span>{{ item.laundrySuppliesName }}</span>
+                <div class="quantity-control">
+                  <button @click="() => decreaseQuantity(item.id, false)">-</button>
+                  <span>{{ laundryQuantities[item.id] || 1 }}</span>
+                  <button @click="() => increaseQuantity(item.id, false)">+</button>
+                </div>
+              </div>
+              <div class="setting">
+                <button class="delete-button" @click="() => outLaundryCart(item.id)">×</button>
+                <span>{{ (item.laundrySuppliesPrice * (laundryQuantities[item.id] || 1)).toLocaleString() }}원</span>
+              </div>
+            </li>
+          </div>
+        </div>
+      </div>
+    
+      <div class="summary">
+        <span style="padding: 0 20px 0 10px; font-size: 18px;">{{ totalPrice.toLocaleString() }}원</span>
+        <button class="checkout-button" @click="checkout">
+          구매하기
+        </button>
+      </div>
+    </div>
+  </template>
+  
 <script setup>
 import { useCartStore as useMealKitStore } from "@/store/MealKit"; // MealKit 스토어
 import { useCartStore as useLaundryStore } from "@/store/Laundry"; // Laundry 스토어
@@ -78,59 +134,6 @@ const checkout = () => {
 };
 </script>
 
-<template>
-  <div class="cart">
-    <h1>장바구니</h1>
-    <button class="clear-button" @click="allClear">전체 삭제</button>
-  
-    <div class="mealkit-cart">
-      <h2>밀키트 장바구니</h2>
-      <div class="cart-list">
-        <li v-for="item in mealKitCartItem" :key="item.id" class="cart-item">
-          <div class="item-info">
-            <span>{{ item.mealKitName }}</span>
-            <div class="quantity-control">
-              <button @click="() => decreaseQuantity(item.id, true)">-</button>
-              <span>{{ mealKitQuantities[item.id] || 1 }}</span>
-              <button @click="() => increaseQuantity(item.id, true)">+</button>
-            </div>
-          </div>
-          <div class="setting">
-            <button class="delete-button" @click="() => outMealKitCart(item.id)">×</button>
-            <span>{{ (item.mealKitPrice * (mealKitQuantities[item.id] || 1)).toLocaleString() }}원</span>
-          </div>
-        </li>
-      </div>
-    </div>
-  
-    <div class="laundry-cart">
-      <h2>세탁용품 장바구니</h2>
-      <div class="cart-list">
-        <li v-for="item in laundryCartItem" :key="item.id" class="cart-item">
-          <div class="item-info">
-            <span>{{ item.laundrySuppliesName }}</span>
-            <div class="quantity-control">
-              <button @click="() => decreaseQuantity(item.id, false)">-</button>
-              <span>{{ laundryQuantities[item.id] || 1 }}</span>
-              <button @click="() => increaseQuantity(item.id, false)">+</button>
-            </div>
-          </div>
-          <div class="setting">
-            <button class="delete-button" @click="() => outLaundryCart(item.id)">×</button>
-            <span>{{ (item.laundrySuppliesPrice * (laundryQuantities[item.id] || 1)).toLocaleString() }}원</span>
-          </div>
-        </li>
-      </div>
-    </div>
-  
-    <div class="summary">
-      <span style="padding: 0 20px 0 10px; font-size: 18px;">{{ totalPrice.toLocaleString() }}원</span>
-      <button class="checkout-button" @click="checkout">
-        구매하기
-      </button>
-    </div>
-  </div>
-</template>
 
 <style scoped>
 .cart {
@@ -141,19 +144,28 @@ const checkout = () => {
   border-radius: 10px;
   box-sizing: border-box;
 }
+
+.carts {
+  background-color: white;
+  border-radius: 8px;
+  margin: 20px 20px 0px 20px;
+  border: 1px solid #ddd;
+}
 .mealkit-cart {
   background-color: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  border-radius: 10px;
+  /* border: 1px solid #ddd; */
+  /* box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
+  /* border-radius: 10px; */
   box-sizing: border-box;
   padding: 20px;
   margin: 20px;
+  border-bottom: 1px solid #ddd;
 }
+
 .laundry-cart {
   background-color: white;
-  border: 1px solid #ddd;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  /* border: 1px solid #ddd;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); */
   border-radius: 10px;
   box-sizing: border-box;
   padding: 20px;

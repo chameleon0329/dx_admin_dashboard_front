@@ -6,8 +6,8 @@
           <MealKitChart />
       </div>
       <div class="bottom-row">
-          <YearlyMealKitRank />
-          <MonthlyMealKitRank />
+          <MealKitYearlyRank />
+          <MealKitMonthlyRank />
       </div>
     </div>
   </div>
@@ -17,16 +17,16 @@
 
 import MealKitChart from '@/components/MealKitChart.vue';
 import MealKitList from '@/components/MealKitList.vue';
-import MonthlyMealKitRank from '@/components/MealKitMonthlyRank.vue';
-import YearlyMealKitRank from '@/components/MealKitYearlyRank.vue';
+import MealKitMonthlyRank from '@/components/MealKitMonthlyRank.vue';
+import MealKitYearlyRank from '@/components/MealKitYearlyRank.vue';
 
 export default {
     name: 'MealKit',
     components: {
       MealKitList,
       MealKitChart,
-      MonthlyMealKitRank,
-      YearlyMealKitRank,
+      MealKitMonthlyRank,
+      MealKitYearlyRank,
   },
 };
 </script>

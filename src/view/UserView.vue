@@ -1,15 +1,15 @@
 <template>
     <div class="container">
       <div class="main-content">
-        <CustomerList />
+        <UserList />
         <div class="sub-content">
           <div class="top-row">
-            <GenderChart />
-            <AgeChart />
+            <UserGenderChart />
+            <UserAgeChart />
           </div>
           <div class="bottom-row">
-            <GenderRank />
-            <AgeRank />
+            <UserGenderRank />
+            <UserAgeRank />
         </div>
         </div>
       </div>
@@ -17,20 +17,20 @@
   </template>
   
   <script>
-import AgeChart from '@/components/UserAgeChart.vue';
-import AgeRank from '@/components/UserAgeRank.vue';
-import CustomerList from '@/components/UserList.vue';
-import GenderChart from '@/components/UserGenderChart.vue';
-import GenderRank from '@/components/UserGenderRank.vue';
+import UserAgeChart from '@/components/UserAgeChart.vue';
+import UserAgeRank from '@/components/UserAgeRank.vue';
+import UserList from '@/components/UserList.vue';
+import UserGenderChart from '@/components/UserGenderChart.vue';
+import UserGenderRank from '@/components/UserGenderRank.vue';
 
   export default {
     name: 'User',
     components: {
-      CustomerList,
-      GenderChart,
-      AgeChart,
-      GenderRank,
-      AgeRank,
+      UserList,
+      UserGenderChart,
+      UserAgeChart,
+      UserGenderRank,
+      UserAgeRank,
     }
   }
   </script>

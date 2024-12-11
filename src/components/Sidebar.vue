@@ -1,15 +1,15 @@
 <template>
     <nav class="sidebar">
-        <div class="logo">LG Life Station</div>
+        <div class="logo"><router-link to="/" class="logo">LG Life Station</router-link></div>
         <SelectBox />
         <div>
             <ul>
-                <li><router-link to="/" class="nav-button">MAIN</router-link></li>
-                <li><router-link to="/mealkit" class="nav-button">밀키트</router-link></li>
-                <li><router-link to="/laundrysupplies" class="nav-button">세탁용품</router-link></li>
-                <li><router-link to="/user" class="nav-button">고객</router-link></li>
-                <li><router-link to="/homeappliance" class="nav-button">가전</router-link></li>
-                <li><router-link to="/order" class="nav-button">주문</router-link></li>
+                <!-- <li><router-link to="/" class="nav-button">MAIN</router-link></li> -->
+                <li><router-link to="/mealkit" class="nav-button">밀키트 관리</router-link></li>
+                <li><router-link to="/laundrysupplies" class="nav-button">세탁용품 관리</router-link></li>
+                <li><router-link to="/user" class="nav-button">고객 관리</router-link></li>
+                <li><router-link to="/homeappliance" class="nav-button">가전 관리</router-link></li>
+                <li><router-link to="/order" class="nav-button">재고 주문</router-link></li>
                 <!-- <li><router-link to="/congestion" class="nav-button">혼잡도</router-link></li> -->
             </ul>
         </div>
@@ -48,6 +48,20 @@ export default {
     color: #ffffff;
     margin-bottom: 40px;
     text-align: center;
+    text-decoration: none;
+    display: block;
+    padding: 10px;
+    margin: 10px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.logo:hover{
+    transform: scale(1.1); /* 버튼 크기 확대 */
+    background-color: #ededed; /* 배경 색 변경 */
+    color: #ff4d4d;
+    cursor: pointer;
 }
 
 .sidebar ul {

@@ -2,11 +2,11 @@
     <div class="container">
       <div class="main-content">
         <div class="top-row">
-          <MonthlySalesChart />
-          <MonthlySalesRank />
+          <MainMonthlySalesChart />
+          <MainMonthlySalesRank />
         </div>
         <div class="bottom-row">
-          <MonthlyCustomerChart />
+          <MainMonthlyCustomerChart />
           <MainMonthlyLaundrySalesRank />
         </div>
       </div>
@@ -14,18 +14,18 @@
   </template>
   
   <script>
-import MonthlySalesRank from '@/components/MainMonthlyMealKitSalesRank.vue';
-import MonthlySalesChart from '@/components/MainMonthlySalesChart.vue';
-import MonthlyCustomerChart from '@/components/MainMonthlyCustomerChart.vue';
+import MainMonthlySalesRank from '@/components/MainMonthlyMealKitSalesRank.vue';
+import MainMonthlySalesChart from '@/components/MainMonthlySalesChart.vue';
+import MainMonthlyCustomerChart from '@/components/MainMonthlyCustomerChart.vue';
 import MainMonthlyLaundrySalesRank from '@/components/MainMonthlyLaundrySalesRank.vue';
 
 
   export default {
     name: 'Main',
     components: {
-      MonthlySalesChart,
-      MonthlySalesRank,
-      MonthlyCustomerChart,
+      MainMonthlySalesChart,
+      MainMonthlySalesRank,
+      MainMonthlyCustomerChart,
       MainMonthlyLaundrySalesRank,
     }
   }

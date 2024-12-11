@@ -1,3 +1,44 @@
+<template>
+    <div class="meal-kit-table-wrapper">
+        <h3>재고 부족 세탁용품 리스트 (60개 미만)</h3>
+        <div class="meal-kit-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>이름</th>
+                        <th>
+                            <select v-model="selectedClassification">
+                                <option value="">분류</option>
+                                <option v-for="classification in classifications" :key="classification" :value="classification">
+                                    {{ classification }}
+                                </option>
+                            </select>
+                        </th>
+                        <th>가격</th>
+                        <th @click="toggleSortOrder" style="cursor: pointer;">
+                            재고
+                            <span v-if="sortOrder === 'asc'">▲</span>
+                            <span v-else>▼</span>
+                        </th>
+                        <th>장바구니</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr v-for="it in sortedItems" :key="it.id">
+                        <td>{{ it.laundrySuppliesName }}</td>
+                        <td>{{ it.laundrySuppliesClassification }}</td>
+                        <td>{{ it.laundrySuppliesPrice.toLocaleString() }}원</td>
+                        <td>{{ it.laundrySuppliesCount }}</td>
+                        <td>
+                            <button @click="inCart(it.id)" class="button">담기</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</template>
+
 <script setup>
 import { useCartStore } from '@/store/Laundry.js';
 import { storeToRefs } from 'pinia';
@@ -45,46 +86,6 @@ const inCart = (id) => {
 const classifications = computed(() => [...new Set(item.value.map(it => it.laundrySuppliesClassification))]);
 </script>
 
-<template>
-    <div class="meal-kit-table-wrapper">
-        <h3>재고 부족 세탁용품 리스트 (60개 미만)</h3>
-        <div class="meal-kit-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th>이름</th>
-                        <th>
-                            <select v-model="selectedClassification">
-                                <option value="">분류</option>
-                                <option v-for="classification in classifications" :key="classification" :value="classification">
-                                    {{ classification }}
-                                </option>
-                            </select>
-                        </th>
-                        <th>가격</th>
-                        <th @click="toggleSortOrder" style="cursor: pointer;">
-                            재고
-                            <span v-if="sortOrder === 'asc'">▲</span>
-                            <span v-else>▼</span>
-                        </th>
-                        <th>장바구니</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="it in sortedItems" :key="it.id">
-                        <td>{{ it.laundrySuppliesName }}</td>
-                        <td>{{ it.laundrySuppliesClassification }}</td>
-                        <td>{{ it.laundrySuppliesPrice.toLocaleString() }}원</td>
-                        <td>{{ it.laundrySuppliesCount }}</td>
-                        <td>
-                            <button @click="inCart(it.id)" class="button">담기</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</template>
 
 <style>
 .meal-kit-table-wrapper {
