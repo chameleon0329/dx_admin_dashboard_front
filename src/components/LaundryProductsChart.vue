@@ -6,8 +6,8 @@
       <select id="laundrySelect" v-model="selectedLaundryId" @change="onLaundryChange">
         <option
           v-for="laundry in laundryProducts"
-          :key="laundry.laundryId"
-          :value="laundry.laundryId"
+          :key="laundry.laundrySuppliesId"
+          :value="laundry.laundrySuppliesId"
         >
           {{ laundry.laundrySuppliesName }}
         </option>
@@ -22,35 +22,49 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { Chart } from "chart.js";
-import { laundryProducts } from "../assets/laundryProducts"; // 데이터셋 가져오기
+import { useLaundryStore } from "@/store/LaundryList.js"; // 상태 관리 스토어 import
 
 export default {
-  name: "LaundryProductsChart",
+  name: "LaundryProductChart",
   setup() {
-    const laundryProductsRef = ref(laundryProducts);
-    const selectedLaundryId = ref(laundryProducts[0]?.laundryId || null); // 첫 번째 세탁용품을 기본 선택
-    const selectedLaundry = ref(laundryProducts[0] || null);
-    const chartInstance = ref(null);
-    const chartCanvas = ref(null);
+    const laundryStore = useLaundryStore(); // Pinia 상태 관리 스토어 인스턴스
+    const laundryProducts = computed(() => laundryStore.selectedLaundrySupplies); // 선택된 매장의 세탁용품 리스트
 
-    // 세탁용품 변경 시 처리
+    const selectedLaundryId = ref(laundryProducts.value[0]?.laundrySuppliesId || null); // 기본 선택 세탁용품
+    const selectedLaundry = computed(() =>
+      laundryProducts.value.find(
+        (product) => product.laundrySuppliesId === selectedLaundryId.value
+      )
+    );
+
+    const chartInstance = ref(null); // Chart.js 인스턴스
+    const chartCanvas = ref(null); // canvas 요소 참조
+
+    // 세탁용품 변경 처리
     const onLaundryChange = () => {
-      selectedLaundry.value = laundryProductsRef.value.find(
-        (laundry) => laundry.laundryId === selectedLaundryId.value
-      );
+      if (selectedLaundry.value) {
+        renderChart(selectedLaundry.value); // 차트 업데이트
+      }
     };
 
     // 차트 생성 및 업데이트
     const renderChart = (data) => {
       if (chartInstance.value) {
-        chartInstance.value.destroy();
+        chartInstance.value.destroy(); // 기존 차트 제거
+        chartInstance.value = null;
       }
+
+      if (!chartCanvas.value) {
+        console.warn("Chart canvas is not available for rendering.");
+        return;
+      }
+
       const ctx = chartCanvas.value.getContext("2d");
 
-      // 동적으로 범례 텍스트 설정
-      const legendText = `${data.laundrySuppliesName}별 월별 판매량`;
+      const maxSales = Math.max(...data.laundrySuppliesMonthlySalesVolume); // 월별 판매량 중 최대값
+      const stepSize = Math.ceil(maxSales / 10) || 1; // 적절한 stepSize 계산
 
       chartInstance.value = new Chart(ctx, {
         type: "bar",
@@ -71,8 +85,8 @@ export default {
           ],
           datasets: [
             {
-              label: legendText,
-              data: data["월별 판매량"],
+              label: `${data.laundrySuppliesName}별 월별 판매량`,
+              data: data.laundrySuppliesMonthlySalesVolume,
               backgroundColor: "rgba(54, 162, 235, 0.2)",
               borderColor: "rgba(54, 162, 235, 1)",
               borderWidth: 1,
@@ -89,35 +103,33 @@ export default {
           scales: {
             y: {
               beginAtZero: true,
-              min: 0, // 최소값
-              max: 500, // 최대값 (데이터셋에 따라 조정 가능)
               ticks: {
-                stepSize: 50, // 스텝 크기
+                stepSize,
               },
+              min: 0,
+              max: Math.ceil(maxSales / stepSize) * stepSize, // 최대값 설정
             },
           },
         },
       });
     };
 
-    // 선택된 세탁용품이 바뀔 때마다 차트 렌더링
+    // Watch: 세탁용품이 바뀔 때 차트 렌더링
     watch(selectedLaundry, (newVal) => {
       if (newVal) renderChart(newVal);
     });
 
-    // 초기 차트 렌더링 (첫 번째 세탁용품)
+    // 초기 차트 렌더링
     onMounted(() => {
-      if (laundryProductsRef.value.length > 0) {
-        selectedLaundry.value = laundryProductsRef.value[0];
+      if (laundryProducts.value.length > 0 && selectedLaundry.value) {
         renderChart(selectedLaundry.value);
       }
     });
 
     return {
-      laundryProducts: laundryProductsRef,
+      laundryProducts,
       selectedLaundryId,
       selectedLaundry,
-      onLaundryChange,
       chartCanvas,
     };
   },
@@ -163,7 +175,7 @@ export default {
 }
 
 canvas {
-  max-width: 550px; /* 차트 너비를 설정 */
+  max-width: 550px;
   width: 100%;
   height: auto;
 }

@@ -1,16 +1,16 @@
 <template>
   <div class="meal-kit-table-wrapper">
-    <h3>밀키트 리스트</h3>
+    <h3>{{ selectedStoreName }}의 밀키트 리스트</h3>
     <div class="meal-kit-table">
       <table>
         <thead>
           <tr>
-            <th>이름</th>
+            <th style="width: 140px; text-align: center;">이름</th>
             <th>
               <div class="filter">
-                <select id="category-filter" v-model="filters.category" @change="filterMealKits">
+                <select v-model="filters.category" @change="filterMealKits">
                   <option value="all">분류</option>
-                  <option v-for="(category, index) in uniqueCategories" :key="index" :value="category">
+                  <option v-for="category in uniqueCategories" :key="category" :value="category">
                     {{ category }}
                   </option>
                 </select>
@@ -18,25 +18,28 @@
             </th>
             <th>
               <div class="filter">
-                <select id="type-filter" v-model="filters.foodType" @change="filterMealKits">
+                <select v-model="filters.foodType" @change="filterMealKits">
                   <option value="all">음식 분류</option>
-                  <option v-for="(type, index) in uniqueFoodTypes" :key="index" :value="type">
+                  <option v-for="type in uniqueFoodTypes" :key="type" :value="type">
                     {{ type }}
                   </option>
                 </select>
-              </div>  
+              </div>
             </th>
             <th>가격</th>
             <th>재고</th>
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(mealKit, index) in filteredMealKits" :key="index" class="row">
+          <tr v-for="mealKit in filteredMealKits" :key="mealKit.mealKitId" class="row">
             <td>{{ mealKit.mealKitName }}</td>
-            <td>{{ mealKit.mealKitClassificaion }}</td>
-            <td>{{ mealKit.mealKitFoodClassificaion }}</td>
+            <td>{{ mealKit.mealKitClassification }}</td>
+            <td>{{ mealKit.mealKitFoodClassification }}</td>
             <td>{{ mealKit.mealKitPrice.toLocaleString() }} 원</td>
             <td>{{ mealKit.mealKitCount }}</td>
+          </tr>
+          <tr v-if="filteredMealKits.length === 0">
+            <td colspan="5">밀키트 데이터가 없습니다.</td>
           </tr>
         </tbody>
       </table>
@@ -45,43 +48,66 @@
 </template>
 
 <script>
-import { mealKitData } from "@/assets/MealKitData.js";
+import { useMealKitStore } from "@/store/MealKitStore";
+import { computed, onMounted, ref } from "vue";
 
 export default {
   name: "MealKitList",
-  data() {
-    return {
-      mealKits: mealKitData, // 데이터셋
-      filters: {
-        category: "all",
-        foodType: "all",
-      },
-      filteredMealKits: [],
-    };
-  },
-  computed: {
-    uniqueCategories() {
-      // 분류 목록 (중복 제거)
-      return [...new Set(this.mealKits.map((kit) => kit.mealKitClassificaion))];
-    },
-    uniqueFoodTypes() {
-      // 음식 분류 목록 (중복 제거)
-      return [...new Set(this.mealKits.map((kit) => kit.mealKitFoodClassificaion))];
-    },
-  },
-  methods: {
-    filterMealKits() {
-      const { category, foodType } = this.filters;
-      this.filteredMealKits = this.mealKits.filter((kit) => {
-        return (
-          (category === "all" || kit.mealKitClassificaion === category) &&
-          (foodType === "all" || kit.mealKitFoodClassificaion === foodType)
-        );
+  setup() {
+    const mealKitStore = useMealKitStore();
+
+    // 필터 상태 관리
+    const filters = ref({
+      category: "all",
+      foodType: "all",
+    });
+
+    // 현재 선택된 매장
+    const selectedStoreName = computed(() => mealKitStore.selectedStoreName || "매장");
+
+    // 밀키트 목록
+    const mealKits = computed(() => mealKitStore.items);
+
+    // 필터링된 밀키트
+    const filteredMealKits = computed(() => {
+      return mealKits.value.filter((kit) => {
+        const matchesCategory =
+          filters.value.category === "all" || kit.mealKitClassification === filters.value.category;
+        const matchesFoodType =
+          filters.value.foodType === "all" || kit.mealKitFoodClassification === filters.value.foodType;
+        return matchesCategory && matchesFoodType;
       });
-    },
-  },
-  created() {
-    this.filteredMealKits = this.mealKits; // 초기값 설정
+    });
+
+    // 고유 카테고리
+    const uniqueCategories = computed(() =>
+      Array.from(new Set(mealKits.value.map((kit) => kit.mealKitClassification)))
+    );
+
+    // 고유 음식 분류
+    const uniqueFoodTypes = computed(() =>
+      Array.from(new Set(mealKits.value.map((kit) => kit.mealKitFoodClassification)))
+    );
+
+    // 컴포넌트 마운트 후 밀키트 데이터 로드
+    onMounted(async () => {
+      const storeId = 1; // 예시로 storeId 1을 사용
+      await mealKitStore.fetchMealKits(storeId); // 밀키트 데이터 로드
+    });
+
+    // 필터 변경 시 호출되는 함수
+    const filterMealKits = () => {
+      // 필터링 로직은 computed 속성에서 처리되므로 이 곳에 따로 로직을 추가하지 않음
+    };
+
+    return {
+      filters,
+      filteredMealKits,
+      uniqueCategories,
+      uniqueFoodTypes,
+      selectedStoreName,
+      filterMealKits,
+    };
   },
 };
 </script>
@@ -167,6 +193,6 @@ tbody td {
 
 .row {
   transition: transform 0.2s ease-in-out;
-  cursor: pointer;
+  cursor: default;
 }
 </style>

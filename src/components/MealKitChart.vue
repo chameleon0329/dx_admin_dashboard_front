@@ -3,9 +3,9 @@
     <!-- 밀키트 선택 Select Box -->
     <div class="meal-kit-select">
       <label for="mealKitSelect">밀키트를 선택하세요:</label>
-      <select id="mealKitSelect" v-model="selectedMealKitId" @change="onMealKitChange">
+      <select id="mealKitSelect" v-model="selectedMealKitId">
         <option
-          v-for="mealKit in mealKitData"
+          v-for="mealKit in mealKits"
           :key="mealKit.mealKitId"
           :value="mealKit.mealKitId"
         >
@@ -22,36 +22,50 @@
 </template>
 
 <script>
-import { ref, onMounted, watch } from "vue";
+import { ref, onMounted, watch, computed } from "vue";
 import { Chart } from "chart.js";
-import { mealKitData } from "../assets/MealKitData";
+import { useMealKitStore } from "@/store/MealKit"; // Pinia 스토어 import
 
 export default {
   name: "MealKitChart",
   setup() {
-    const mealKitDataRef = ref(mealKitData);
-    const selectedMealKitId = ref(mealKitData[0]?.mealKitId || null); // 첫 번째 밀키트를 기본 선택
-    const selectedMealKit = ref(mealKitData[0] || null);
-    const chartInstance = ref(null);
-    const chartCanvas = ref(null);
+    const mealKitStore = useMealKitStore(); // Pinia 스토어 인스턴스
 
-    // 밀키트 변경 시 처리
-    const onMealKitChange = () => {
-      selectedMealKit.value = mealKitDataRef.value.find(
-        (mealKit) => mealKit.mealKitId === selectedMealKitId.value
+    // 현재 선택된 매장의 밀키트 리스트
+    const mealKits = computed(() => mealKitStore.selectedMealKits);
+
+    // 초기 선택된 밀키트 (첫 번째 밀키트)
+    const selectedMealKitId = ref(mealKits.value[0]?.mealKitId || null);
+
+    // 선택된 밀키트 데이터를 가져오기
+    const selectedMealKit = computed(() =>
+      mealKits.value.find((mealKit) => mealKit.mealKitId === selectedMealKitId.value)
+    );
+
+    const chartInstance = ref(null); // Chart.js 인스턴스
+    const chartCanvas = ref(null); // canvas 요소 참조
+
+    // Y축 최댓값 계산: 기본 매장의 밀키트 리스트 중 월별 판매량의 가장 큰 값
+    const maxSalesValue = computed(() => {
+      return Math.max(
+        ...mealKits.value.flatMap((mealKit) => mealKit.mealKitMonthlySalesVolume)
       );
-    };
+    });
 
     // 차트 생성 및 업데이트
-    const renderChart = (data) => {
+    const renderChart = (mealKit) => {
       if (chartInstance.value) {
-        chartInstance.value.destroy();
+        chartInstance.value.destroy(); // 기존 차트를 삭제
       }
+
+      if (!chartCanvas.value) {
+        console.warn("Chart canvas is not available for rendering.");
+        return;
+      }
+
       const ctx = chartCanvas.value.getContext("2d");
 
-      // 동적으로 범례 텍스트 설정
-      const legendText = `${data.mealKitName}별 월별 판매량`;
-
+      // 차트 생성
       chartInstance.value = new Chart(ctx, {
         type: "bar",
         data: {
@@ -71,8 +85,8 @@ export default {
           ],
           datasets: [
             {
-              label: legendText,
-              data: data["월별 판매량"],
+              label: `${mealKit.mealKitName} 월별 판매량`,
+              data: mealKit.mealKitMonthlySalesVolume, // 선택된 밀키트의 월별 판매량
               backgroundColor: "rgba(75, 192, 192, 0.2)",
               borderColor: "rgba(75, 192, 192, 1)",
               borderWidth: 1,
@@ -88,11 +102,10 @@ export default {
           },
           scales: {
             y: {
-              beginAtZero: true,
-              min: 0, // 최소값
-              max: 150, // 최대값 (데이터셋 기준)
+              beginAtZero: true, // Y축 최솟값 고정
+              suggestedMax: maxSalesValue.value, // Y축 최댓값을 계산된 값으로 설정
               ticks: {
-                stepSize: 10, // 스텝 크기
+                stepSize: 10,
               },
             },
           },
@@ -100,25 +113,25 @@ export default {
       });
     };
 
-    // 선택된 밀키트가 바뀔 때마다 차트 렌더링
-    watch(selectedMealKit, (newVal) => {
-      if (newVal) renderChart(newVal);
+    // 선택된 밀키트가 바뀔 때마다 차트 업데이트
+    watch(selectedMealKit, (newMealKit) => {
+      if (newMealKit) {
+        renderChart(newMealKit);
+      }
     });
 
-    // 초기 차트 렌더링 (첫 번째 밀키트)
+    // 초기 차트 렌더링
     onMounted(() => {
-      if (mealKitDataRef.value.length > 0) {
-        selectedMealKit.value = mealKitDataRef.value[0];
+      if (selectedMealKit.value) {
         renderChart(selectedMealKit.value);
       }
     });
 
     return {
-      mealKitData: mealKitDataRef,
+      mealKits,
       selectedMealKitId,
-      selectedMealKit,
-      onMealKitChange,
       chartCanvas,
+      maxSalesValue, // Y축 최댓값 계산된 값
     };
   },
 };
@@ -144,7 +157,6 @@ export default {
   flex-direction: column;
   align-items: center;
   gap: 10px;
-  border-radius: 8px;
 }
 
 .meal-kit-select label {
@@ -163,7 +175,7 @@ export default {
 }
 
 canvas {
-  max-width: 550px; /* 차트 너비를 500px로 설정 */
+  max-width: 550px;
   width: 100%;
   height: auto;
 }

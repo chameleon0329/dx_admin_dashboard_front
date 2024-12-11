@@ -1,27 +1,338 @@
 import { defineStore } from "pinia";
-import { reactive } from "vue";
-export const useCartStore = defineStore("mealKit", () => {
-    const item = reactive([
-        { id: 1, mealKitName: "스테이크 밀키트", mealKitClassificaion: "양식", mealKitFoodClassificaion: "고기", mealKitPrice: 20000, mealKitCount: 15, "월별 판매량": [100, 120, 110, 130, 90, 95, 105, 115, 125, 80, 70, 60], "월별 총매출액": [2000000, 2400000, 2200000, 2600000, 1800000, 1900000, 2100000, 2300000, 2500000, 1600000, 1400000, 1200000] },
-        { id: 2, mealKitName: "된장찌개 밀키트", mealKitClassificaion: "한식", mealKitFoodClassificaion: "찌개", mealKitPrice: 12000, mealKitCount: 20, "월별 판매량": [80, 85, 95, 100, 70, 65, 75, 85, 90, 60, 50, 40], "월별 총매출액": [960000, 1020000, 1140000, 1200000, 840000, 780000, 900000, 1020000, 1080000, 720000, 600000, 480000] },
-        { id: 3, mealKitName: "스파게티 밀키트", mealKitClassificaion: "양식", mealKitFoodClassificaion: "면", mealKitPrice: 15000, mealKitCount: 10, "월별 판매량": [70, 75, 85, 90, 65, 60, 70, 80, 85, 50, 40, 35], "월별 총매출액": [1050000, 1125000, 1275000, 1350000, 975000, 900000, 1050000, 1200000, 1275000, 750000, 600000, 525000] },
-        { id: 4, mealKitName: "부대찌개 밀키트", mealKitClassificaion: "한식", mealKitFoodClassificaion: "찌개", mealKitPrice: 14000, mealKitCount: 25, "월별 판매량": [60, 65, 75, 80, 55, 50, 60, 70, 75, 45, 35, 30], "월별 총매출액": [840000, 910000, 1050000, 1120000, 770000, 700000, 840000, 980000, 1050000, 630000, 490000, 420000] },
-        { id: 5, mealKitName: "짜장면 밀키트", mealKitClassificaion: "중식", mealKitFoodClassificaion: "면", mealKitPrice: 13000, mealKitCount: 18, "월별 판매량": [50, 55, 65, 70, 45, 40, 50, 60, 65, 40, 30, 25], "월별 총매출액": [650000, 715000, 845000, 910000, 585000, 520000, 650000, 780000, 845000, 520000, 390000, 325000] },
-        { id: 6, mealKitName: "비빔밥 밀키트", mealKitClassificaion: "한식", mealKitFoodClassificaion: "밥", mealKitPrice: 11000, mealKitCount: 22, "월별 판매량": [90, 95, 105, 110, 85, 80, 90, 100, 105, 75, 65, 55], "월별 총매출액": [990000, 1045000, 1155000, 1210000, 935000, 880000, 990000, 1100000, 1155000, 825000, 715000, 605000] },
-        { id: 7, mealKitName: "치킨 카레 밀키트", mealKitClassificaion: "동남아식", mealKitFoodClassificaion: "밥", mealKitPrice: 18000, mealKitCount: 12, "월별 판매량": [45, 50, 55, 60, 40, 35, 45, 50, 55, 30, 25, 20], "월별 총매출액": [810000, 900000, 990000, 1080000, 720000, 630000, 810000, 900000, 990000, 540000, 450000, 360000] },
-        { id: 8, mealKitName: "마파두부 밀키트", mealKitClassificaion: "중식", mealKitFoodClassificaion: "두부", mealKitPrice: 14000, mealKitCount: 17, "월별 판매량": [70, 75, 85, 90, 65, 60, 70, 80, 85, 50, 40, 30], "월별 총매출액": [980000, 1050000, 1190000, 1260000, 910000, 840000, 980000, 1120000, 1190000, 700000, 560000, 420000] },
-        { id: 9, mealKitName: "파스타 밀키트", mealKitClassificaion: "양식", mealKitFoodClassificaion: "면", mealKitPrice: 16000, mealKitCount: 16, "월별 판매량": [75, 80, 90, 95, 70, 65, 75, 85, 90, 55, 45, 35], "월별 총매출액": [1200000, 1280000, 1440000, 1520000, 1120000, 1040000, 1200000, 1360000, 1440000, 880000, 720000, 560000] },
-        { id: 10, mealKitName: "갈비찜 밀키트", mealKitClassificaion: "한식", mealKitFoodClassificaion: "고기", mealKitPrice: 25000, mealKitCount: 9, "월별 판매량": [40, 45, 50, 55, 35, 30, 40, 45, 50, 25, 20, 15], "월별 총매출액": [1000000, 1125000, 1250000, 1375000, 875000, 750000, 1000000, 1125000, 1250000, 625000, 500000, 375000] },
-        { id: 11, mealKitName: "쌀국수 밀키트", mealKitClassificaion: "동남아식", mealKitFoodClassificaion: "면", mealKitPrice: 12000, mealKitCount: 21, "월별 판매량": [65, 70, 80, 85, 60, 55, 65, 75, 80, 45, 35, 30], "월별 총매출액": [780000, 840000, 960000, 1020000, 720000, 660000, 780000, 900000, 960000, 540000, 420000, 360000] },
-        { id: 12, mealKitName: "오므라이스 밀키트", mealKitClassificaion: "일식", mealKitFoodClassificaion: "밥", mealKitPrice: 13000, mealKitCount: 19, "월별 판매량": [60, 65, 75, 80, 55, 50, 60, 70, 75, 45, 35, 30], "월별 총매출액": [780000, 845000, 975000, 1040000, 715000, 650000, 780000, 910000, 975000, 585000, 455000, 390000] },
-        { id: 13, mealKitName: "김치찜 밀키트", mealKitClassificaion: "한식", mealKitFoodClassificaion: "찌개", mealKitPrice: 14000, mealKitCount: 20, "월별 판매량": [50, 55, 60, 65, 45, 40, 50, 60, 65, 40, 30, 25], "월별 총매출액": [700000, 770000, 840000, 910000, 630000, 560000, 700000, 840000, 910000, 560000, 420000, 350000] },
-        { id: 14, mealKitName: "볶음밥 밀키트", mealKitClassificaion: "중식", mealKitFoodClassificaion: "밥", mealKitPrice: 11000, mealKitCount: 25, "월별 판매량": [75, 80, 85, 90, 70, 65, 75, 85, 90, 55, 40, 35], "월별 총매출액": [825000, 880000, 935000, 990000, 770000, 715000, 825000, 935000, 990000, 605000, 440000, 385000] },
-        { id: 15, mealKitName: "초밥 밀키트", mealKitClassificaion: "일식", mealKitFoodClassificaion: "밥", mealKitPrice: 20000, mealKitCount: 14, "월별 판매량": [55, 60, 70, 75, 50, 45, 55, 65, 70, 40, 30, 20], "월별 총매출액": [1100000, 1200000, 1400000, 1500000, 1000000, 900000, 1100000, 1300000, 1400000, 800000, 600000, 400000] },
-        { id: 16, mealKitName: "육개장 밀키트", mealKitClassificaion: "한식", mealKitFoodClassificaion: "국", mealKitPrice: 14000, mealKitCount: 22, "월별 판매량": [65, 70, 80, 85, 60, 55, 65, 75, 80, 50, 40, 35], "월별 총매출액": [910000, 980000, 1120000, 1190000, 840000, 770000, 910000, 1050000, 1120000, 700000, 560000, 490000] },
-        { id: 17, mealKitName: "순대국 밀키트", mealKitClassificaion: "한식", mealKitFoodClassificaion: "국", mealKitPrice: 11000, mealKitCount: 30, "월별 판매량": [50, 55, 60, 65, 45, 40, 50, 60, 65, 40, 30, 20], "월별 총매출액": [550000, 605000, 660000, 715000, 495000, 440000, 550000, 660000, 715000, 440000, 330000, 220000] },
-        { id: 18, mealKitName: "탕수육 밀키트", mealKitClassificaion: "중식", mealKitFoodClassificaion: "고기", mealKitPrice: 16000, mealKitCount: 12, "월별 판매량": [40, 45, 50, 55, 35, 30, 40, 45, 50, 25, 20, 15], "월별 총매출액": [640000, 720000, 800000, 880000, 560000, 480000, 640000, 720000, 800000, 400000, 320000, 240000] },
-        { id: 19, mealKitName: "샤브샤브 밀키트", mealKitClassificaion: "일식", mealKitFoodClassificaion: "고기", mealKitPrice: 17000, mealKitCount: 11, "월별 판매량": [35, 40, 45, 50, 30, 25, 35, 40, 45, 20, 15, 10], "월별 총매출액": [595000, 680000, 765000, 850000, 510000, 425000, 595000, 680000, 765000, 340000, 255000, 170000] }
-    ]);
-    const cartItem = reactive([]);
-    return { item, cartItem };
+
+export const useMealKitStore = defineStore("MealKit", {
+  state: () => ({
+    selectedStoreId: 'S001', // 기본값: 홍대 매장 (storeId: S001)
+    stores: [
+      {
+        storeId: 'S001',
+        name: "역삼점",
+        mealKits: [
+          {
+            mealKitId: 'MK001',
+            mealKitName: "부산맛집 돼지국밥",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "고기",
+            mealKitPrice: 15000,
+            mealKitCount: 10,
+            mealKitMonthlySalesVolume: [50, 60, 55, 48, 62, 58, 70, 65, 55, 60, 50, 58],
+          },
+          {
+            mealKitId: 'MK002',
+            mealKitName: "면사랑 직화크림불닭면",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 12000,
+            mealKitCount: 35,
+            mealKitMonthlySalesVolume: [30, 25, 28, 40, 35, 38, 42, 50, 45, 32, 28, 25],
+          },
+          {
+            mealKitId: 'MK003',
+            mealKitName: "홍익쭈꾸미 S",
+            mealKitClassificaion: "중식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 10000,
+            mealKitCount: 50,
+            mealKitMonthlySalesVolume: [40, 45, 50, 55, 60, 65, 50, 55, 40, 45, 50, 55],
+          },
+          {
+            mealKitId: 'MK004',
+            mealKitName: "머쉬룸크림파스타",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "찌개",
+            mealKitPrice: 14000,
+            mealKitCount: 20,
+            mealKitMonthlySalesVolume: [25, 30, 35, 28, 22, 18, 15, 20, 25, 30, 35, 28],
+          },
+          {
+            mealKitId: 'MK005',
+            mealKitName: "티엔미미 총유면",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "밥",
+            mealKitPrice: 8000,
+            mealKitCount: 60,
+            mealKitMonthlySalesVolume: [80, 85, 90, 95, 100, 105, 100, 80, 70, 80, 85, 75],
+          },
+        ],
+      },
+      {
+        storeId: 'S002',
+        name: "서초점",
+        mealKits: [
+          {
+            mealKitId: 'MK001',
+            mealKitName: "불고기 밀키트",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "고기",
+            mealKitPrice: 15000,
+            mealKitCount: 50,
+            mealKitMonthlySalesVolume: [30, 40, 35, 25, 45, 50, 60, 55, 35, 45, 30, 40],
+          },
+          {
+            mealKitId: 'MK002',
+            mealKitName: "파스타 밀키트",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 12000,
+            mealKitCount: 25,
+            mealKitMonthlySalesVolume: [20, 25, 30, 28, 24, 22, 26, 30, 28, 25, 20, 22],
+          },
+          {
+            mealKitId: 'MK003',
+            mealKitName: "짜장면 밀키트",
+            mealKitClassificaion: "중식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 10000,
+            mealKitCount: 45,
+            mealKitMonthlySalesVolume: [50, 55, 48, 52, 58, 60, 62, 65, 55, 50, 48, 58],
+          },
+          {
+            mealKitId: 'MK004',
+            mealKitName: "김치찌개 밀키트",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "찌개",
+            mealKitPrice: 14000,
+            mealKitCount: 15,
+            mealKitMonthlySalesVolume: [10, 12, 15, 18, 20, 25, 22, 20, 15, 12, 10, 12],
+          },
+          {
+            mealKitId: 'MK005',
+            mealKitName: "햄버거 밀키트",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "밥",
+            mealKitPrice: 8000,
+            mealKitCount: 55,
+            mealKitMonthlySalesVolume: [70, 75, 80, 85, 90, 95, 85, 80, 75, 70, 65, 60],
+          },
+        ],
+      },
+      {
+        storeId: 'S003',
+        name: "광진원룸촌점",
+        mealKits: [
+          {
+            mealKitId: 'MK001',
+            mealKitName: "불고기 밀키트",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "고기",
+            mealKitPrice: 15000,
+            mealKitCount: 30,
+            mealKitMonthlySalesVolume: [40, 35, 30, 28, 25, 20, 18, 22, 25, 30, 35, 40],
+          },
+          {
+            mealKitId: 'MK002',
+            mealKitName: "파스타 밀키트",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 12000,
+            mealKitCount: 20,
+            mealKitMonthlySalesVolume: [18, 22, 24, 26, 30, 28, 25, 22, 18, 20, 22, 24],
+          },
+          {
+            mealKitId: 'MK003',
+            mealKitName: "짜장면 밀키트",
+            mealKitClassificaion: "중식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 10000,
+            mealKitCount: 35,
+            mealKitMonthlySalesVolume: [25, 30, 35, 40, 45, 48, 42, 38, 35, 30, 25, 28],
+          },
+          {
+            mealKitId: 'MK004',
+            mealKitName: "김치찌개 밀키트",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "찌개",
+            mealKitPrice: 14000,
+            mealKitCount: 10,
+            mealKitMonthlySalesVolume: [8, 10, 12, 15, 18, 20, 22, 18, 15, 12, 10, 8],
+          },
+          {
+            mealKitId: 'MK005',
+            mealKitName: "햄버거 밀키트",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "밥",
+            mealKitPrice: 8000,
+            mealKitCount: 40,
+            mealKitMonthlySalesVolume: [60, 65, 70, 75, 80, 85, 75, 70, 65, 60, 55, 50],
+          },
+        ],
+      },
+      {
+        storeId: 'S004',
+        name: "건대동문회관점",
+        mealKits: [
+          {
+            mealKitId: 'MK001',
+            mealKitName: "불고기 밀키트",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "고기",
+            mealKitPrice: 15000,
+            mealKitCount: 30,
+            mealKitMonthlySalesVolume: [40, 35, 30, 28, 25, 20, 18, 22, 25, 30, 35, 40],
+          },
+          {
+            mealKitId: 'MK002',
+            mealKitName: "파스타 밀키트",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 12000,
+            mealKitCount: 20,
+            mealKitMonthlySalesVolume: [18, 22, 24, 26, 30, 28, 25, 22, 18, 20, 22, 24],
+          },
+          {
+            mealKitId: 'MK003',
+            mealKitName: "짜장면 밀키트",
+            mealKitClassificaion: "중식",
+            mealKitFoodClassificaion: "면",
+            mealKitPrice: 10000,
+            mealKitCount: 35,
+            mealKitMonthlySalesVolume: [25, 30, 35, 40, 45, 48, 42, 38, 35, 30, 25, 28],
+          },
+          {
+            mealKitId: 'MK004',
+            mealKitName: "김치찌개 밀키트",
+            mealKitClassificaion: "한식",
+            mealKitFoodClassificaion: "찌개",
+            mealKitPrice: 14000,
+            mealKitCount: 10,
+            mealKitMonthlySalesVolume: [8, 10, 12, 15, 18, 20, 22, 18, 15, 12, 10, 8],
+          },
+          {
+            mealKitId: 'MK005',
+            mealKitName: "햄버거 밀키트",
+            mealKitClassificaion: "양식",
+            mealKitFoodClassificaion: "밥",
+            mealKitPrice: 8000,
+            mealKitCount: 40,
+            mealKitMonthlySalesVolume: [60, 65, 70, 75, 80, 85, 75, 70, 65, 60, 55, 50],
+          },
+        ],
+      },
+      // {
+      //   storeId: 'S004',
+      //   name: 건대동문회관점,
+      // },
+      // {
+      //   storeId: 'S005',
+      //   name: 관악한빛점,
+      // },
+      // {
+      //   storeId: 'S006',
+      //   name: 성신여대입구점,
+      // },
+      // {
+      //   storeId: 'S007',
+      //   name: 을지로점,
+      // },
+      // {
+      //   storeId: 'S008',
+      //   name: 명동점,
+      // },
+      // {
+      //   storeId: 'S009',
+      //   name: 신림점,
+      // },
+      // {
+      //   storeId: 'S010',
+      //   name: 신촌점,
+      // },
+    ],
+    cart: [],
+  }),
+  getters: {
+    selectedStore(state) {
+      return state.stores.find(store => store.storeId === state.selectedStoreId);
+    },
+    lowStockMealKits(state) {
+      const selectedStore = this.selectedStore;
+      return selectedStore ? selectedStore.mealKits.filter(mealKit => mealKit.mealKitCount < 20) : [];
+    },
+    selectedMealKits(state) {
+      const selectedStore = state.stores.find((store) => store.storeId === state.selectedStoreId);
+      return selectedStore ? selectedStore.mealKits : [];
+    },
+    cartItems(state) {
+      return state.cart;
+    },
+  },
+  actions: {
+    selectStore(storeId) {
+      this.selectedStoreId = storeId; // 선택된 매장 업데이트
+    },
+    addToCart(id) {
+      const mealKit = this.selectedMealKits.find((kit) => kit.mealKitId === id);
+      if (mealKit) {
+        const cartItem = this.cart.find((item) => item.id === id);
+        if (cartItem) {
+          cartItem.quantity += 1; // 이미 장바구니에 있으면 수량 증가
+        } else {
+          this.cart.push({
+            id: mealKit.mealKitId,
+            name: mealKit.mealKitName,
+            price: mealKit.mealKitPrice,
+            stock: mealKit.mealKitCount,
+            quantity: 1,
+          });
+        }
+      }
+    },
+    removeFromCart(id) {
+      this.cart = this.cart.filter((item) => item.id !== id);
+    },
+    clearCart() {
+      this.cart = [];
+    },
+  },
 });
+
+// import { defineStore } from "pinia";
+// import axios from "axios"; // 데이터 요청을 위해 axios 사용
+
+// export const useMealKitStore = defineStore("MealKit", {
+//   state: () => ({
+//     selectedStoreId: null, // 기본값: null (초기 선택된 매장이 없을 수 있음)
+//     stores: [], // 초기에는 비어 있고 서버에서 데이터를 받아 채움
+//     isLoading: false, // 데이터 로딩 상태 관리
+//     error: null, // 에러 상태 관리
+//   }),
+//   actions: {
+//     /**
+//      * 서버에서 매장 데이터를 불러오는 함수
+//      */
+//     async fetchStores() {
+//       this.isLoading = true;
+//       this.error = null;
+
+//       try {
+//         // 백엔드 서버에서 데이터 가져오기 (예제 URL 사용)
+//         const response = await axios.get("/api/stores");
+//         this.stores = response.data; // 서버에서 받은 데이터를 상태에 저장
+
+//         // 기본 매장 선택 (첫 번째 매장 또는 다른 로직에 따라)
+//         if (this.stores.length > 0) {
+//           this.selectedStoreId = this.stores[0].storeId;
+//         }
+//       } catch (err) {
+//         this.error = err.message || "데이터를 가져오는 중 오류가 발생했습니다.";
+//       } finally {
+//         this.isLoading = false;
+//       }
+//     },
+
+//     /**
+//      * 매장 선택 업데이트
+//      * @param {string} storeId 선택된 매장의 ID
+//      */
+//     selectStore(storeId) {
+//       this.selectedStoreId = storeId;
+//     },
+//   },
+//   getters: {
+//     /**
+//      * 선택된 매장 데이터 반환
+//      */
+//     selectedStore(state) {
+//       return state.stores.find((store) => store.storeId === state.selectedStoreId) || null;
+//     },
+//   },
+// });

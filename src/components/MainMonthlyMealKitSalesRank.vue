@@ -2,13 +2,14 @@
   <div>
     <div class="monthly-rank-wrapper">
       <div class="header">
-        <h3>{{ selectedYear }}년 {{ selectedMonth }}월 총 매출액 순위
+        <h3>
+          {{ selectedYear }}년 {{ selectedMonth }}월 밀키트 총 매출액 순위
           <button class="calendar-btn" @click="togglePopup">
             <img src="./calendar-icon1.png" alt="달력 아이콘" />
           </button>
         </h3>
       </div>
-      <table>
+      <table v-if="!isLoading && rankedMealKits.length">
         <thead>
           <tr>
             <th>순위</th>
@@ -17,14 +18,24 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(kit, index) in rankedMealKits" :key="index" class="row">
+          <tr
+            v-for="(kit, index) in rankedMealKits"
+            :key="kit.mealKitId"
+            class="row"
+          >
             <td>{{ index + 1 }}</td>
-            <td>{{ kit.name }}</td>
-            <td>{{ kit.sales.toLocaleString() }} 원</td>
+            <td>{{ kit.mealKitName }}</td>
+            <td>{{ kit.monthlyTotalRevenue.toLocaleString() }} 원</td>
           </tr>
         </tbody>
       </table>
+      <p v-if="isLoading">데이터를 로드 중입니다...</p>
+      <p v-else-if="!rankedMealKits.length && !isLoading" class="error" style="text-align: center;">
+        <!-- {{ error }} -->
+        {{ selectedYear }}년 {{ selectedMonth }}월 밀키트 총 매출액 데이터가 없습니다.
+      </p>
     </div>
+
     <div v-if="isPopupOpen" class="popup-overlay" @click="closePopup">
       <div class="popup-content" @click.stop>
         <div class="popup-header">
@@ -34,7 +45,11 @@
         </div>
         <div class="popup-body">
           <div class="month-grid">
-            <button v-for="month in months" :key="month" @click="selectMonth(month)">
+            <button
+              v-for="month in months"
+              :key="month"
+              @click="selectMonth(month)"
+            >
               {{ month }}월
             </button>
           </div>
@@ -45,49 +60,78 @@
 </template>
 
 <script>
-import { mealKitData } from "../assets/MealKitData.js"; // 데이터 가져오기
+import { ref, computed, onMounted } from "vue";
+import { useMainMonthlyMealKitSalesRankStore } from "@/store/MainMonthlyMealKitSalesRank";
 
 export default {
-  name: "MonthlyMealKitSalesRank",
-  data() {
-    return {
-      selectedYear: new Date().getFullYear(),
-      selectedMonth: new Date().getMonth() + 1,
-      popupYear: new Date().getFullYear(),
-      isPopupOpen: false,
-      months: Array.from({ length: 12 }, (_, i) => i + 1),
-      mealKits: mealKitData, // 데이터셋
+  name: "MainMonthlyMealKitSalesRank",
+  setup() {
+    const storeId = 1; // 기본 매장 ID (예시)
+    const currentDate = new Date();
+
+    // 년/월 상태
+    const selectedYear = ref(currentDate.getFullYear());
+    const selectedMonth = ref(currentDate.getMonth() + 1);
+    const popupYear = ref(currentDate.getFullYear());
+    const isPopupOpen = ref(false);
+
+    // Pinia 스토어 상태 연결
+    const store = useMainMonthlyMealKitSalesRankStore();
+    const rankedMealKits = computed(() => store.rankedMealKits);
+    const isLoading = computed(() => store.isLoading);
+    const error = computed(() => store.error);
+
+    // 데이터 로드 함수
+    const fetchRankings = async () => {
+      await store.fetchTop5MealKits(
+        storeId,
+        selectedYear.value,
+        selectedMonth.value
+      );
     };
-  },
-  computed: {
-    rankedMealKits() {
-      // 선택된 월에 대한 판매량을 기준으로 밀키트 리스트를 내림차순 정렬하고 상위 5개만 반환
-      return this.mealKits
-        .map(kit => ({
-          name: kit["mealKitName"],
-          sales: kit["월별 총매출액"][this.selectedMonth - 1] // 선택된 월의 판매량
-        }))
-        .sort((a, b) => b.sales - a.sales) // 판매량 내림차순 정렬
-        .slice(0, 5); // 상위 5개
-    },
-  },
-  methods: {
-    togglePopup() {
-      this.isPopupOpen = !this.isPopupOpen;
-    },
-    closePopup() {
-      this.isPopupOpen = false;
-    },
-    prevYear() {
-      this.popupYear--;
-    },
-    nextYear() {
-      this.popupYear++;
-    },
-    selectMonth(month) {
-      this.selectedMonth = month; // 선택한 월 업데이트
-      this.isPopupOpen = false; // 팝업 닫기
-    },
+
+    // 팝업 관리 함수
+    const togglePopup = () => {
+      isPopupOpen.value = !isPopupOpen.value;
+    };
+
+    const closePopup = () => {
+      isPopupOpen.value = false;
+    };
+
+    const prevYear = () => {
+      popupYear.value--;
+    };
+
+    const nextYear = () => {
+      popupYear.value++;
+    };
+
+    const selectMonth = (month) => {
+      selectedYear.value = popupYear.value;
+      selectedMonth.value = month;
+      closePopup();
+      fetchRankings();
+    };
+
+    // 컴포넌트 마운트 시 데이터 로드
+    onMounted(fetchRankings);
+
+    return {
+      selectedYear,
+      selectedMonth,
+      popupYear,
+      isPopupOpen,
+      months: Array.from({ length: 12 }, (_, i) => i + 1),
+      rankedMealKits,
+      isLoading,
+      error,
+      togglePopup,
+      closePopup,
+      prevYear,
+      nextYear,
+      selectMonth,
+    };
   },
 };
 </script>
@@ -96,6 +140,7 @@ export default {
 .monthly-rank-wrapper {
   width: 600px;
   max-width: 600px;
+  height: 395px;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -112,7 +157,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 25px;
+  width: 20px;
   height: 20px;
   background: none;
   border: none;
@@ -125,8 +170,8 @@ export default {
 }
 
 .calendar-btn img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
 .calendar-btn:hover {

@@ -1,25 +1,26 @@
 <template>
   <div class="customer-table-wrapper">
     <h3>매장 방문 고객 리스트</h3>
-    <div class="customer-table">
+    <p v-if="isLoading">데이터를 로드 중입니다...</p>
+    <p v-if="error">{{ error }}</p>
+    <div class="customer-table" v-if="!isLoading && !error">
       <table>
         <thead>
           <tr>
             <th>이름</th>
             <th>
               <div class="filter">
-                <!-- <label for="gender-filter">성별</label> -->
                 <select id="gender-filter" v-model="filters.gender" @change="filterCustomers">
                   <option value="all">성별</option>
-                  <option value="남성">남성</option>
-                  <option value="여성">여성</option>
+                  <option value="남">남</option>
+                  <option value="여">여</option>
                 </select>
               </div>
             </th>
             <th>나이</th>
             <th>
               <div class="filter">
-                <select id="subscription-filter" v-model="filters.subscription" @change="filterCustomers">
+                <select id="subscription-filter" v-model="filters.subscription" @change="filteredCustomers">
                   <option value="all">구독 여부</option>
                   <option value="구독">구독</option>
                   <option value="미구독">미구독</option>
@@ -30,72 +31,72 @@
         </thead>
         <tbody>
           <tr v-for="(customer, index) in filteredCustomers" :key="index" class="row">
-            <td>{{ customer.name }}</td>
-            <td>{{ customer.gender }}</td>
-            <td>{{ customer.age }}</td>
-            <td>{{ customer.subscription }}</td>
+            <td>{{ customer.userName }}</td>
+            <td>{{ customer.userGender }}</td>
+            <td>{{ customer.userAge }}</td>
+            <td>{{ customer.isSubscribe ? "구독" : "미구독" }}</td>
           </tr>
         </tbody>
       </table>
+      <p v-if="filteredCustomers.length === 0">조건에 맞는 고객 데이터가 없습니다.</p>
     </div>
   </div>
 </template>
 
 <script>
+import { ref, computed, onMounted } from "vue";
+import { useUserListStore } from "@/store/User";
+
 export default {
-  name: "CustomerTable",
-  data() {
-    return {
-      customers: [
-        { name: "김철수", gender: "남성", age: 25, subscription: "구독" },
-        { name: "이영희", gender: "여성", age: 30, subscription: "미구독" },
-        { name: "박지훈", gender: "남성", age: 40, subscription: "구독" },
-        { name: "최미라", gender: "여성", age: 35, subscription: "구독" },
-        { name: "정성훈", gender: "남성", age: 29, subscription: "미구독" },
-        { name: "김하나", gender: "여성", age: 22, subscription: "미구독" },
-        { name: "이준혁", gender: "남성", age: 34, subscription: "구독" },
-        { name: "문수진", gender: "여성", age: 27, subscription: "구독" },
-        { name: "강민수", gender: "남성", age: 45, subscription: "미구독" },
-        { name: "오지영", gender: "여성", age: 19, subscription: "미구독" },
-        { name: "박상훈", gender: "남성", age: 32, subscription: "구독" },
-        { name: "이수진", gender: "여성", age: 28, subscription: "미구독" },
-        { name: "김진우", gender: "남성", age: 38, subscription: "구독" },
-        { name: "양지은", gender: "여성", age: 42, subscription: "구독" },
-        { name: "장민호", gender: "남성", age: 27, subscription: "미구독" },
-        { name: "송혜진", gender: "여성", age: 24, subscription: "구독" },
-        { name: "강민지", gender: "여성", age: 33, subscription: "미구독" },
-        { name: "김석규", gender: "남성", age: 50, subscription: "구독" },
-        { name: "한지우", gender: "여성", age: 22, subscription: "미구독" },
-        { name: "이대훈", gender: "남성", age: 26, subscription: "구독" }
-      ],
-      filters: {
-        gender: "all",
-        subscription: "all",
-      },
-      filteredCustomers: [],
-    };
-  },
-  methods: {
-    filterCustomers() {
-      const { gender, subscription } = this.filters;
-      this.filteredCustomers = this.customers.filter((customer) => {
-        return (
-          (gender === "all" || customer.gender === gender) &&
-          (subscription === "all" || customer.subscription === subscription)
-        );
+  name: "UserList",
+  setup() {
+    const storeId = 1; // 예시 매장 ID
+    const userListStore = useUserListStore();
+
+    // 상태 가져오기
+    const users = computed(() => userListStore.users);
+    const isLoading = computed(() => userListStore.isLoading);
+    const error = computed(() => userListStore.error);
+
+    // 필터 상태
+    const filters = ref({
+      gender: "all",
+      subscription: "all",
+    });
+
+    // 필터링된 고객 리스트
+    const filteredCustomers = computed(() => {
+      const { gender, subscription } = filters.value;
+      return users.value.filter((customer) => {
+        const matchesGender = gender === "all" || customer.userGender === gender;
+        const matchesSubscription =
+          subscription === "all" || (subscription === "구독" ? customer.isSubscribe : !customer.isSubscribe);
+        return matchesGender && matchesSubscription;
       });
-    },
-  },
-  created() {
-    this.filteredCustomers = this.customers; // 초기값
+    });
+
+    // 데이터 가져오기
+    const fetchUsers = async () => {
+      await userListStore.fetchUsers(storeId);
+    };
+
+    // 컴포넌트 마운트 시 데이터 가져오기
+    onMounted(fetchUsers);
+
+    return {
+      filters,
+      filteredCustomers,
+      isLoading,
+      error,
+    };
   },
 };
 </script>
 
 <style scoped>
 .customer-table-wrapper {
-  width: 400px;
-  height: 710px;
+  width: 380px;
+  height: 750px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   box-sizing: border-box;
@@ -147,7 +148,7 @@ thead th {
   font-size: 15px;
   font-weight: bold;
   color: #333;
-  text-align: left;
+  text-align: center;
   border-bottom: 2px solid #eee;
   padding: 15px;
 }
@@ -157,6 +158,7 @@ tbody td {
   color: #333;
   border-bottom: 1px solid #eee;
   padding: 15px;
+  text-align: center;
 }
 
 .row:hover {

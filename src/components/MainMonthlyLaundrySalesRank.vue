@@ -2,7 +2,7 @@
     <div>
       <div class="monthly-rank-wrapper">
         <div class="header">
-          <h3>{{ selectedYear }}년 {{ selectedMonth }}월 총 매출액 순위
+          <h3>{{ selectedYear }}년 {{ selectedMonth }}월 세탁용품 총 매출액 순위
             <button class="calendar-btn" @click="togglePopup">
               <img src="./calendar-icon1.png" alt="달력 아이콘" />
             </button>
@@ -17,11 +17,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="(kit, index) in rankedMealKits" :key="index" class="row">
+            <!-- <tr v-for="(kit, index) in rankedMealKits" :key="index" class="row">
               <td>{{ index + 1 }}</td>
               <td>{{ kit.name }}</td>
               <td>{{ kit.sales.toLocaleString() }} 원</td>
-            </tr>
+            </tr> -->
           </tbody>
         </table>
       </div>
@@ -95,6 +95,7 @@
   <style scoped>
   .monthly-rank-wrapper {
     width: 600px;
+    height: 395px;
     max-width: 600px;
     padding: 20px;
     border-radius: 10px;

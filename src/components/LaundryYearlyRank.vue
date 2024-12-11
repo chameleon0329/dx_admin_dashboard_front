@@ -1,7 +1,7 @@
 <template>
   <div class="yearly-rank-wrapper">
     <div class="header">
-      <h3>{{ selectedYear }}년 판매량 순위</h3>
+      <h3>{{ selectedYear }}년 세탁용품 판매량 순위</h3>
     </div>
     <table>
       <thead>
@@ -12,10 +12,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(kit, index) in rankedlaundryProducts" :key="index" class="row">
+        <tr v-for="(product, index) in rankedLaundrySupplies" :key="index" class="row">
           <td>{{ index + 1 }}</td>
-          <td>{{ kit.name }}</td>
-          <td>{{ kit.totalSales.toLocaleString() }}</td>
+          <td>{{ product.laundrySuppliesName }}</td>
+          <td>{{ product.totalSales.toLocaleString() }}</td>
         </tr>
       </tbody>
     </table>
@@ -23,29 +23,45 @@
 </template>
 
 <script>
-import { laundryProducts } from '../assets/laundryProducts.js';  // 데이터 불러오기
+import { ref, computed, onMounted } from "vue";
+import { useLaundryYearlyRankStore } from "@/store/LaundryYearlyRank"; // Pinia Store Import
 
 export default {
-  name: "YearlyLaundryRank",
-  data() {
-    return {
-      selectedYear: new Date().getFullYear(),  // 현재 연도로 초기화
+  name: "Test",
+  setup() {
+    const storeId = 1; // 예시 Store ID
+    const selectedYear = ref(2023); // 예시로 2023년 설정
+    
+    // 스토어 상태 가져오기
+    const laundryYearlyRankStore = useLaundryYearlyRankStore();
+    const rankedLaundrySupplies = computed(() => laundryYearlyRankStore.rankedLaundrySupplies);
+    const isLoading = computed(() => laundryYearlyRankStore.isLoading);
+    const error = computed(() => laundryYearlyRankStore.error);
+
+    // 데이터를 가져오는 함수
+    const fetchRankings = async () => {
+      await laundryYearlyRankStore.fetchLaundrySalesRank(
+        storeId, 
+        selectedYear.value
+      );
+
+      // 데이터 확인용 콘솔 출력
+      // console.log("Ranked Laundry Supplies in Component:", rankedLaundrySupplies.value);
     };
-  },
-  computed: {
-    rankedlaundryProducts() {
-      // 밀키트 데이터에서 총 판매량 계산 및 상위 5개만 반환
-      return laundryProducts
-        .map(kit => ({
-          name: kit.laundrySuppliesName,
-          totalSales: kit["월별 판매량"].reduce((sum, sale) => sum + sale, 0),
-        }))
-        .sort((a, b) => b.totalSales - a.totalSales)
-        .slice(0, 5);
-    },
+
+    // 컴포넌트 마운트 시 데이터 가져오기
+    onMounted(fetchRankings);
+
+    return {
+      selectedYear,
+      rankedLaundrySupplies,
+      isLoading,
+      error,
+    };
   },
 };
 </script>
+
 
 <style scoped>
 .yearly-rank-wrapper {
@@ -75,33 +91,33 @@ h3 {
 }
 
 table {
-    width: 100%;
-    border-collapse: collapse;
-    text-align: center;
-  }
-  
-  th {
-    font-size: 15px;
-    font-weight: bold;
-    color: #333;
-    text-align: center;
-    border-bottom: 2px solid #eee;
-    padding: 10px;
-  }
-  
-  td {
-    font-size: 14px;
-    color: #333;
-    border-bottom: 1px solid #eee;
-    padding: 15px;
-  }
-  
-  .row:hover {
-  transform: scale(1.02);
-  }
+  width: 100%;
+  border-collapse: collapse;
+  text-align: center;
+}
 
-  .row {
+th {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+  text-align: center;
+  border-bottom: 2px solid #eee;
+  padding: 10px;
+}
+
+td {
+  font-size: 14px;
+  color: #333;
+  border-bottom: 1px solid #eee;
+  padding: 15px;
+}
+
+.row:hover {
+  transform: scale(1.02);
+}
+
+.row {
   transition: transform 0.2s ease-in-out;
   cursor: default;
-  }
+}
 </style>

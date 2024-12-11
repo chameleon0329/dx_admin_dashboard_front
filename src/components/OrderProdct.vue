@@ -1,139 +1,122 @@
-  <template>
-    <div class="cart">
-      <h1>장바구니</h1>
-      <button class="clear-button" @click="allClear">전체 삭제</button>
-    
-      <div class="carts">
-        <div class="mealkit-cart">
-          <h2>밀키트</h2>
-          <div class="cart-list">
-            <li v-for="item in mealKitCartItem" :key="item.id" class="cart-item">
-              <div class="item-info">
-                <span>{{ item.mealKitName }}</span>
-                <div class="quantity-control">
-                  <button @click="() => decreaseQuantity(item.id, true)">-</button>
-                  <span>{{ mealKitQuantities[item.id] || 1 }}</span>
-                  <button @click="() => increaseQuantity(item.id, true)">+</button>
-                </div>
+<template>
+  <div class="cart">
+    <h1>장바구니</h1>
+    <button class="clear-button" @click="allClear">전체 삭제</button>
+
+    <div class="carts">
+      <div class="mealkit-cart">
+        <h2>밀키트</h2>
+        <div class="cart-list">
+          <li v-for="item in mealKitCartItems" :key="item.id" class="cart-item">
+            <div class="item-info">
+              <span>{{ item.name }}</span>
+              <div class="quantity-control">
+                <button @click="adjustQuantity(item.id, true, false)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button @click="adjustQuantity(item.id, true, true)">+</button>
               </div>
-              <div class="setting">
-                <button class="delete-button" @click="() => outMealKitCart(item.id)">×</button>
-                <span>{{ (item.mealKitPrice * (mealKitQuantities[item.id] || 1)).toLocaleString() }}원</span>
-              </div>
-            </li>
-          </div>
-        </div>
-      
-        <div class="laundry-cart">
-          <h2>세탁용품</h2>
-          <div class="cart-list">
-            <li v-for="item in laundryCartItem" :key="item.id" class="cart-item">
-              <div class="item-info">
-                <span>{{ item.laundrySuppliesName }}</span>
-                <div class="quantity-control">
-                  <button @click="() => decreaseQuantity(item.id, false)">-</button>
-                  <span>{{ laundryQuantities[item.id] || 1 }}</span>
-                  <button @click="() => increaseQuantity(item.id, false)">+</button>
-                </div>
-              </div>
-              <div class="setting">
-                <button class="delete-button" @click="() => outLaundryCart(item.id)">×</button>
-                <span>{{ (item.laundrySuppliesPrice * (laundryQuantities[item.id] || 1)).toLocaleString() }}원</span>
-              </div>
-            </li>
-          </div>
+            </div>
+            <div class="setting">
+              <button class="delete-button" @click="removeFromCart(item.id, true)">×</button>
+              <span>{{ (item.price * item.quantity).toLocaleString() }}원</span>
+            </div>
+          </li>
         </div>
       </div>
-    
-      <div class="summary">
-        <span style="padding: 0 20px 0 10px; font-size: 18px;">{{ totalPrice.toLocaleString() }}원</span>
-        <button class="checkout-button" @click="checkout">
-          구매하기
-        </button>
+
+      <div class="laundry-cart">
+        <h2>세탁용품</h2>
+        <div class="cart-list">
+          <li v-for="item in laundryCartItems" :key="item.id" class="cart-item">
+            <div class="item-info">
+              <span>{{ item.name }}</span>
+              <div class="quantity-control">
+                <button @click="adjustQuantity(item.id, false, false)">-</button>
+                <span>{{ item.quantity }}</span>
+                <button @click="adjustQuantity(item.id, false, true)">+</button>
+              </div>
+            </div>
+            <div class="setting">
+              <button class="delete-button" @click="removeFromCart(item.id, false)">×</button>
+              <span>{{ (item.price * item.quantity).toLocaleString() }}원</span>
+            </div>
+          </li>
+        </div>
       </div>
     </div>
-  </template>
+
+    <div class="summary">
+      <span style="padding: 0 20px 0 10px; font-size: 18px;">{{ totalPrice.toLocaleString() }}원</span>
+      <button class="checkout-button" @click="checkout">구매하기</button>
+    </div>
+  </div>
+</template>
   
 <script setup>
-import { useCartStore as useMealKitStore } from "@/store/MealKit"; // MealKit 스토어
-import { useCartStore as useLaundryStore } from "@/store/Laundry"; // Laundry 스토어
-import { reactive, computed } from "vue";
+import { useMealKitStore } from "@/store/MealKitStore";
+import { useLaundryStore } from "@/store/Laundry";
+import { computed } from "vue";
 
-// MealKit 스토어
+// Pinia 스토어 가져오기
 const mealKitStore = useMealKitStore();
-// Laundry 스토어
 const laundryStore = useLaundryStore();
 
-// MealKit과 Laundry 장바구니 수량 저장 (id: 수량 형태)
-const mealKitQuantities = reactive({});
-const laundryQuantities = reactive({});
+// MealKit 및 Laundry 장바구니 아이템
+const mealKitCartItems = computed(() => mealKitStore.cartItems || []);
+const laundryCartItems = computed(() => laundryStore.cartItems || []);
 
-// 전체 장바구니 비우기
+// 장바구니 전체 삭제
 const allClear = () => {
-  mealKitStore.cartItem = [];
-  laundryStore.cartItem = [];
-  Object.keys(mealKitQuantities).forEach((key) => delete mealKitQuantities[key]);
-  Object.keys(laundryQuantities).forEach((key) => delete laundryQuantities[key]);
+  mealKitStore.clearCart();
+  laundryStore.clearCart();
+  mealKitQuantities.value = {}; // 수량 초기화
+  laundryQuantities.value = {}; // 수량 초기화
 };
 
 // MealKit 장바구니 아이템
-const mealKitCartItem = computed(() => {
-  return mealKitStore.item.filter((v) => mealKitStore.cartItem.includes(v.id));
-});
+const mealKitCartItem = computed(() => mealKitStore.cartItems || []);
 
 // Laundry 장바구니 아이템
-const laundryCartItem = computed(() => {
-  return laundryStore.item.filter((v) => laundryStore.cartItem.includes(v.id));
-});
+const laundryCartItem = computed(() => laundryStore.cartItems || []);
 
-// MealKit 아이템 장바구니에서 제거
-const outMealKitCart = (id) => {
-  mealKitStore.cartItem = mealKitStore.cartItem.filter((v) => v !== id);
-  delete mealKitQuantities[id];
-};
-
-// Laundry 아이템 장바구니에서 제거
-const outLaundryCart = (id) => {
-  laundryStore.cartItem = laundryStore.cartItem.filter((v) => v !== id);
-  delete laundryQuantities[id];
-};
-
-// 수량 증가
-const increaseQuantity = (id, isMealKit) => {
+// 개별 아이템 제거
+const removeFromCart = (id, isMealKit) => {
   if (isMealKit) {
-    mealKitQuantities[id] = (mealKitQuantities[id] || 1) + 1;
+    mealKitStore.removeFromCart(id);
+    delete mealKitQuantities.value[id];
   } else {
-    laundryQuantities[id] = (laundryQuantities[id] || 1) + 1;
+    laundryStore.removeFromCart(id);
+    delete laundryQuantities.value[id];
   }
 };
 
-// 수량 감소
-const decreaseQuantity = (id, isMealKit) => {
-  if (isMealKit) {
-    if (mealKitQuantities[id] > 1) mealKitQuantities[id] -= 1;
-  } else {
-    if (laundryQuantities[id] > 1) laundryQuantities[id] -= 1;
+// 수량 조절
+const adjustQuantity = (id, isMealKit, increment) => {
+  const store = isMealKit ? mealKitStore : laundryStore;
+  const cartItem = store.cart.find((item) => item.id === id);
+  if (cartItem) {
+    cartItem.quantity = Math.max(1, cartItem.quantity + (increment ? 1 : -1));
   }
 };
 
 // 총 구매 금액 계산
 const totalPrice = computed(() => {
-  const mealKitPrice = mealKitCartItem.value.reduce(
-    (prev, cur) => prev + cur.mealKitPrice * (mealKitQuantities[cur.id] || 1),
+  const mealKitTotal = mealKitCartItems.value.reduce(
+    (sum, item) => sum + item.price * item.quantity,
     0
   );
-  const laundryPrice = laundryCartItem.value.reduce(
-    (prev, cur) => prev + cur.laundrySuppliesPrice * (laundryQuantities[cur.id] || 1),
+  const laundryTotal = laundryCartItems.value.reduce(
+    (sum, item) => sum + item.price * item.quantity,
     0
   );
-  return mealKitPrice + laundryPrice;
+  return mealKitTotal + laundryTotal;
 });
 
+// 결제
 const checkout = () => {
   alert(`총 결제 금액: ${totalPrice.value.toLocaleString()}원을 결제하시겠습니까?`);
 };
 </script>
-
 
 <style scoped>
 .cart {

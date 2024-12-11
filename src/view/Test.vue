@@ -1,57 +1,57 @@
 <template>
-  <div class="appliance-list">
-    <h1>가전 리스트</h1>
-    <div class="appliance-list-table">
+  <div class="broken-appliance-list">
+    <h1>고장난 가전 리스트</h1>
+    <div v-if="isLoading" class="loading-text">데이터를 로드 중입니다...</div>
+    <div v-else-if="error" class="error-text">{{ error }}</div>
+    <div v-else class="appliance-list-table">
       <table>
         <thead>
           <tr>
-            <th style="width: 260px;">이름</th>
+            <th>이름</th>
             <th>모델명</th>
             <th>분류</th>
-            <!-- <th>상태</th> -->
+            <th>상태</th>
           </tr>
         </thead>
         <tbody>
           <tr
-            v-for="appliance in appliances"
+            v-for="appliance in brokenAppliances"
             :key="appliance.id"
             class="row"
           >
             <td>{{ appliance.name }}</td>
             <td>{{ appliance.model }}</td>
             <td>{{ appliance.category }}</td>
-            <!-- <td>{{ appliance.status }}</td> -->
+            <td>{{ appliance.status }}</td>
           </tr>
         </tbody>
       </table>
     </div>
-    <p v-if="isLoading" class="loading-text">데이터를 로드 중입니다...</p>
-    <p v-if="error" class="error-text">{{ error }}</p>
   </div>
 </template>
 
 <script>
 import { onMounted, computed } from "vue";
-import { useHomeApplianceStore } from "@/store/HomeAppliance";
+import { useHomeApplianceBrokenStore } from "@/store/HomeApplianceBroken";
 
 export default {
-  name: "HomeApplianceList",
+  name: "HomeApplianceBrokenList",
   setup() {
     const storeId = 1; // 예제 매장 ID
-    const homeApplianceStore = useHomeApplianceStore();
+    const brokenStore = useHomeApplianceBrokenStore();
 
     // 상태 가져오기
-    const appliances = computed(() => homeApplianceStore.appliances);
-    const isLoading = computed(() => homeApplianceStore.isLoading);
-    const error = computed(() => homeApplianceStore.error);
+    const brokenAppliances = computed(() => brokenStore.brokenAppliances);
+    const isLoading = computed(() => brokenStore.isLoading);
+    const error = computed(() => brokenStore.error);
 
     // 데이터 로드
     onMounted(async () => {
-      await homeApplianceStore.fetchAppliances(storeId);
+      await brokenStore.fetchBrokenAppliances(storeId);
     });
 
     return {
-      appliances,
+      brokenAppliances,
       isLoading,
       error,
     };
@@ -60,9 +60,9 @@ export default {
 </script>
 
 <style scoped>
-.appliance-list {
+.broken-appliance-list {
   width: 600px;
-  height: 680px;
+  height: 100%;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
   box-sizing: border-box;
@@ -72,7 +72,7 @@ export default {
 }
 
 .appliance-list-table {
-  max-height: 85%;
+  max-height: 80%;
   overflow-x: hidden;
   overflow-y: auto;
 }

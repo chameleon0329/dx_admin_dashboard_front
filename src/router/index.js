@@ -5,6 +5,7 @@ import LaundrySupplies from '@/view/LaundrySuppliesView.vue';
 import User from '@/view/UserView.vue';
 import HomeAppliance from '@/view/HomeApplianceView.vue';
 import Order from '@/view/OrderView.vue'
+import Test from '@/view/Test.vue';
 
 const routes = [
   { path: '/', 
@@ -30,6 +31,10 @@ const routes = [
   { path: '/order',
     name: 'Order',
     component: Order
+  },
+  { path: '/test',
+    name: 'Test',
+    component: Test
   },
 ];
 

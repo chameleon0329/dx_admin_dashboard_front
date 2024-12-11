@@ -1,18 +1,85 @@
-import { defineStore } from "pinia";
-import { reactive } from "vue";
-export const useCartStore = defineStore("laundry", () => {
-    const item = reactive([
-        { id: 1, laundryId: 1, laundrySuppliesName: "Persil 중성 세제", laundrySuppliesClassification: "세제", laundrySuppliesPrice: 15000, laundrySuppliesCount: 30, "월별 판매량": [300, 320, 340, 350, 330, 310, 280, 290, 310, 280, 270, 260], "월별 총매출액": [4500000, 4800000, 5100000, 5250000, 4950000, 4650000, 4200000, 4350000, 4650000, 4200000, 4050000, 3900000] },
-        { id: 2, laundryId: 2, laundrySuppliesName: "Downy 섬유유연제", laundrySuppliesClassification: "섬유유연제", laundrySuppliesPrice: 12000, laundrySuppliesCount: 60, "월별 판매량": [250, 270, 280, 290, 260, 240, 220, 230, 240, 220, 210, 200], "월별 총매출액": [3000000, 3240000, 3360000, 3480000, 3120000, 2880000, 2640000, 2760000, 2880000, 2640000, 2520000, 2400000] },
-        { id: 3, laundryId: 3, laundrySuppliesName: "Tide 중성 세제", laundrySuppliesClassification: "세제", laundrySuppliesPrice: 13000, laundrySuppliesCount: 40, "월별 판매량": [150, 160, 180, 190, 170, 150, 140, 160, 170, 150, 140, 130], "월별 총매출액": [1950000, 2080000, 2340000, 2470000, 2210000, 1950000, 1820000, 2080000, 2210000, 1950000, 1820000, 1690000] },
-        { id: 4, laundryId: 4, laundrySuppliesName: "Bounce 건조기 시트", laundrySuppliesClassification: "건조기 시트", laundrySuppliesPrice: 7000, laundrySuppliesCount: 100, "월별 판매량": [400, 420, 450, 460, 430, 400, 380, 390, 420, 380, 360, 350], "월별 총매출액": [2800000, 2940000, 3150000, 3220000, 3010000, 2800000, 2660000, 2730000, 2940000, 2660000, 2520000, 2450000] },
-        { id: 5, laundryId: 5, laundrySuppliesName: "Ecoship 섬유유연제", laundrySuppliesClassification: "섬유유연제", laundrySuppliesPrice: 8000, laundrySuppliesCount: 80, "월별 판매량": [180, 200, 220, 230, 210, 190, 180, 200, 210, 190, 180, 170], "월별 총매출액": [1440000, 1600000, 1760000, 1840000, 1680000, 1520000, 1440000, 1600000, 1680000, 1520000, 1440000, 1360000] },
-        { id: 6, laundryId: 6, laundrySuppliesName: "Arm & Hammer 중성 세제", laundrySuppliesClassification: "세제", laundrySuppliesPrice: 25000, laundrySuppliesCount: 30, "월별 판매량": [50, 55, 60, 70, 65, 60, 55, 50, 45, 40, 35, 30], "월별 총매출액": [1250000, 1375000, 1500000, 1750000, 1625000, 1500000, 1375000, 1250000, 1125000, 1000000, 875000, 750000] },
-        { id: 7, laundryId: 7, laundrySuppliesName: "Snuggle 섬유유연제", laundrySuppliesClassification: "섬유유연제", laundrySuppliesPrice: 9000, laundrySuppliesCount: 70, "월별 판매량": [220, 240, 260, 270, 250, 230, 220, 210, 230, 210, 200, 190], "월별 총매출액": [1980000, 2160000, 2340000, 2430000, 2250000, 2070000, 1980000, 1890000, 2070000, 1890000, 1800000, 1710000] },
-        { id: 8, laundryId: 8, laundrySuppliesName: "Febreze 건조기 시트", laundrySuppliesClassification: "건조기 시트", laundrySuppliesPrice: 10000, laundrySuppliesCount: 40, "월별 판매량": [100, 110, 120, 130, 125, 110, 100, 105, 110, 100, 95, 90], "월별 총매출액": [1000000, 1100000, 1200000, 1300000, 1250000, 1100000, 1000000, 1050000, 1100000, 1000000, 950000, 900000] },
-        { id: 9, laundryId: 9, laundrySuppliesName: "OxiClean 중성 세제", laundrySuppliesClassification: "세제", laundrySuppliesPrice: 12000, laundrySuppliesCount: 65, "월별 판매량": [150, 170, 180, 190, 160, 150, 140, 160, 170, 160, 150, 140], "월별 총매출액": [1800000, 2040000, 2160000, 2280000, 1920000, 1800000, 1680000, 1920000, 2040000, 1920000, 1800000, 1680000] },
-        { id: 10, laundryId: 10, laundrySuppliesName: "Gain 섬유유연제", laundrySuppliesClassification: "섬유유연제", laundrySuppliesPrice: 13000, laundrySuppliesCount: 90, "월별 판매량": [350, 380, 400, 420, 390, 360, 340, 350, 360, 340, 320, 310], "월별 총매출액": [4550000, 4940000, 5200000, 5460000, 5070000, 4680000, 4420000, 4550000, 4680000, 4420000, 4160000, 4030000] }
-    ]);
-    const cartItem = reactive([]);
-    return { item, cartItem };
+// src/store/LaundryStore.js
+import { defineStore } from 'pinia';
+import axios from 'axios';
+
+axios.defaults.baseURL = "http://localhost:8081"; // Base URL
+
+export const useLaundryStore = defineStore('laundryStore', {
+  state: () => ({
+    items: [], // 전체 세탁용품 데이터
+    lowStockLaundrySupplies: [], // 재고가 30개 미만인 세탁용품
+    cart: [], // 장바구니
+    selectedStoreId: null, // 선택된 매장 ID
+    isLoading: false,
+    error: null,
+  }),
+
+  getters: {
+    // 선택된 매장의 세탁용품
+    selectedLaundrySupplies(state) {
+      return state.items.filter((supply) => supply.storeId === state.selectedStoreId);
+    },
+
+    // 장바구니 아이템
+    cartItems(state) {
+      return state.cart;
+    },
+  },
+
+  actions: {
+    // 세탁용품 데이터 가져오기
+    async fetchLaundrySupplies(storeId) {
+      this.isLoading = true;
+      this.error = null;
+
+      try {
+        const response = await axios.get(`laundrySupplies/get/list/${storeId}`);
+        this.items = response.data;
+
+        // 재고가 30개 미만인 세탁용품 필터링
+        this.lowStockLaundrySupplies = this.items.filter((supply) => supply.storeCount < 30);
+        console.log("Fetched Laundry Supplies:", this.items);
+        console.log("Low Stock Laundry Supplies:", this.lowStockLaundrySupplies);
+      } catch (err) {
+        this.error = err.message || "Failed to fetch data";
+        console.error("Error fetching laundry supplies:", this.error);
+      } finally {
+        this.isLoading = false;
+      }
+    },
+
+    // 장바구니 추가
+    addToCart(supplyId) {
+      const supply = this.items.find((supply) => supply.laundrySuppliesId === supplyId);
+      if (supply) {
+        const existingItem = this.cart.find((item) => item.id === supplyId);
+        if (existingItem) {
+          existingItem.quantity += 1; // 수량 증가
+        } else {
+          this.cart.push({
+            id: supply.laundrySuppliesId,
+            name: supply.laundrySuppliesName,
+            price: supply.laundrySuppliesPrice,
+            stock: supply.storeCount,
+            quantity: 1,
+          });
+        }
+      }
+    },
+
+    // 장바구니에서 제거
+    removeFromCart(id) {
+      this.cart = this.cart.filter((item) => item.id !== id);
+    },
+
+    // 장바구니 비우기
+    clearCart() {
+      this.cart = [];
+    },
+
+    // 매장 선택
+    selectStore(storeId) {
+      this.selectedStoreId = storeId;
+    },
+  },
 });

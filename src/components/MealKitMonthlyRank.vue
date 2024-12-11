@@ -2,7 +2,7 @@
   <div>
     <div class="monthly-rank-wrapper">
       <div class="header">
-        <h3>{{ selectedYear }}년 {{ selectedMonth }}월 판매량 순위
+        <h3>{{ selectedYear }}년 {{ selectedMonth }}월 밀키트 판매량 순위
           <button class="calendar-btn" @click="togglePopup">
             <img src="./calendar-icon1.png" alt="달력 아이콘" />
           </button>
@@ -19,12 +19,15 @@
         <tbody>
           <tr v-for="(kit, index) in rankedMealKits" :key="index" class="row">
             <td>{{ index + 1 }}</td>
-            <td>{{ kit.name }}</td>
-            <td>{{ kit.sales.toLocaleString() }}</td>
+            <td>{{ kit.mealKitName }}</td>
+            <td>{{ kit.totalSales.toLocaleString() }}</td>
           </tr>
         </tbody>
       </table>
+      <p v-if="isLoading">데이터를 로드 중입니다...</p>
+      <p v-else-if="error" style="text-align: center;">{{ selectedYear }}년 {{ selectedMonth }}월의 밀키트 판매량 데이터가 없습니다.</p>
     </div>
+
     <div v-if="isPopupOpen" class="popup-overlay" @click="closePopup">
       <div class="popup-content" @click.stop>
         <div class="popup-header">
@@ -45,49 +48,78 @@
 </template>
 
 <script>
-import { mealKitData } from "../assets/MealKitData.js"; // 데이터 가져오기
+import { ref, computed, onMounted } from "vue";
+import { useMealKitMonthlyRankStore } from "@/store/MealKitMonthlyRank";
 
 export default {
-  name: "MonthlyMealKitRank",
-  data() {
-    return {
-      selectedYear: new Date().getFullYear(),
-      selectedMonth: new Date().getMonth() + 1,
-      popupYear: new Date().getFullYear(),
-      isPopupOpen: false,
-      months: Array.from({ length: 12 }, (_, i) => i + 1),
-      mealKits: mealKitData, // 데이터셋
+  name: "MealKitMonthlyRank",
+  setup() {
+    const storeId = 1; // Example Store ID
+    const currentDate = new Date();
+
+    // Year and Month Selection
+    const selectedYear = ref(currentDate.getFullYear());
+    const selectedMonth = ref(currentDate.getMonth() + 1);
+    const popupYear = ref(currentDate.getFullYear());
+    const isPopupOpen = ref(false);
+
+    // Pinia Store
+    const mealKitMonthlyRankStore = useMealKitMonthlyRankStore();
+    const rankedMealKits = computed(() => mealKitMonthlyRankStore.rankedMealKits);
+    const isLoading = computed(() => mealKitMonthlyRankStore.isLoading);
+    const error = computed(() => mealKitMonthlyRankStore.error);
+
+    // Fetch Rankings
+    const fetchRankings = async () => {
+      await mealKitMonthlyRankStore.fetchMealKitSalesRank(
+        storeId,
+        selectedYear.value,
+        selectedMonth.value
+      );
     };
-  },
-  computed: {
-    rankedMealKits() {
-      // 선택된 월에 대한 판매량을 기준으로 밀키트 리스트를 내림차순 정렬하고 상위 5개만 반환
-      return this.mealKits
-        .map(kit => ({
-          name: kit["mealKitName"],
-          sales: kit["월별 판매량"][this.selectedMonth - 1] // 선택된 월의 판매량
-        }))
-        .sort((a, b) => b.sales - a.sales) // 판매량 내림차순 정렬
-        .slice(0, 5); // 상위 5개
-    },
-  },
-  methods: {
-    togglePopup() {
-      this.isPopupOpen = !this.isPopupOpen;
-    },
-    closePopup() {
-      this.isPopupOpen = false;
-    },
-    prevYear() {
-      this.popupYear--;
-    },
-    nextYear() {
-      this.popupYear++;
-    },
-    selectMonth(month) {
-      this.selectedMonth = month; // 선택한 월 업데이트
-      this.isPopupOpen = false; // 팝업 닫기
-    },
+
+    // Popup Controls
+    const togglePopup = () => {
+      isPopupOpen.value = !isPopupOpen.value;
+    };
+
+    const closePopup = () => {
+      isPopupOpen.value = false;
+    };
+
+    const prevYear = () => {
+      popupYear.value--;
+    };
+
+    const nextYear = () => {
+      popupYear.value++;
+    };
+
+    const selectMonth = (month) => {
+      selectedYear.value = popupYear.value;
+      selectedMonth.value = month;
+      closePopup();
+      fetchRankings(); // Fetch new data for the selected month
+    };
+
+    // Load data on mount
+    onMounted(fetchRankings);
+
+    return {
+      selectedYear,
+      selectedMonth,
+      popupYear,
+      isPopupOpen,
+      months: Array.from({ length: 12 }, (_, i) => i + 1), // Array of months
+      rankedMealKits,
+      isLoading,
+      error,
+      togglePopup,
+      closePopup,
+      prevYear,
+      nextYear,
+      selectMonth,
+    };
   },
 };
 </script>
@@ -112,7 +144,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 25px;
+  width: 20px;
   height: 20px;
   background: none;
   border: none;
@@ -125,8 +157,8 @@ export default {
 }
 
 .calendar-btn img {
-  width: 20px;
-  height: 20px;
+  width: 30px;
+  height: 30px;
 }
 
 .calendar-btn:hover {
@@ -170,12 +202,12 @@ td {
 }
 
 .row:hover {
-transform: scale(1.02);
+  transform: scale(1.02);
 }
 
 .row {
-transition: transform 0.2s ease-in-out;
-cursor: default;
+  transition: transform 0.2s ease-in-out;
+  cursor: default;
 }
 
 .popup-overlay {

@@ -7,7 +7,7 @@
       @mouseover="hoverDropdown(true)"
       @mouseleave="hoverDropdown(false)"
     >
-      <span class="selected-store">{{ selectedStore?.name || "홍대 선택" }}</span>
+      <span class="selected-store">{{ selectedStore?.name || "역삼점" }}</span>
       <div class="dropdown-icon">
         <!-- <span>▼</span> -->
       </div>
@@ -29,6 +29,63 @@
   </div>
 </template>
 
+<!-- <script>
+import { ref, computed } from "vue"; // ref를 import
+import { useMealKitStore } from "@/store/MealKit.js";
+import { useLaundryStore } from "@/store/LaundryList.js";
+
+export default {
+  name: "SelectBox",
+  setup() {
+    // Pinia 스토어
+    const mealKitStore = useMealKitStore();
+    const laundryStore = useLaundryStore();
+
+    // 스토어에서 stores 데이터 가져오기
+    const stores = computed(() =>
+      mealKitStore.stores.map((store) => ({
+        storeId: store.storeId,
+        name: store.name,
+      }))
+    );
+
+    // 현재 선택된 매장 이름
+    const selectedStoreName = computed(() => {
+      const selectedStore = mealKitStore.selectedStore;
+      return selectedStore ? selectedStore.name : "매장 선택";
+    });
+
+    // 드롭다운 상태
+    const isOpen = ref(false);
+
+    // 드롭다운 토글
+    const toggleDropdown = () => {
+      isOpen.value = !isOpen.value;
+    };
+
+    // 드롭다운 hover 상태
+    const hoverDropdown = (hover) => {
+      if (!isOpen.value) isOpen.value = hover;
+    };
+
+    // 매장 선택 처리
+    const handleStoreSelection = (storeId, storeName) => {
+      mealKitStore.selectStore(storeId); // MealKit 매장 변경
+      laundryStore.selectStore(storeId); // Laundry 매장 변경
+      isOpen.value = false; // 드롭다운 닫기
+    };
+
+    return {
+      stores,
+      selectedStoreName,
+      isOpen,
+      toggleDropdown,
+      hoverDropdown,
+      handleStoreSelection,
+    };
+  },
+};
+</script> -->
 <script>
 export default {
   name: "SelectBox",
@@ -36,18 +93,9 @@ export default {
     return {
       // 더미 데이터
       stores: [
-        { id: 1, name: "홍대 매장" },
-        { id: 2, name: "강남역 매장" },
-        { id: 3, name: "이태원 매장" },
-        { id: 4, name: "신촌 매장" },
-        { id: 5, name: "명동 매장" },
-        { id: 6, name: "건대 매장" },
-        { id: 7, name: "동대문 매장" },
-        { id: 8, name: "삼청동 매장" },
-        { id: 9, name: "한남동 매장" },
-        { id: 10, name: "성수 매장" },
+        { id: 1, name: "역삼점" },
       ],
-      selectedStore: null, // 선택된 매장 정보
+      selectedStore: "역삼점", // 선택된 매장 정보
       isOpen: false, // 드롭다운 열림 여부
       isHovered: false, // 드롭다운 hover 상태
     };
@@ -79,7 +127,7 @@ export default {
 }
 
 .dropdown {
-  color: #FFD1A7;
+  color: white;
   text-decoration: none;
   font-size: 15px;
   display: block;
@@ -94,12 +142,8 @@ export default {
 .dropdown:hover {
   transform: scale(1.1);
   background-color: #ededed;
-  color: #FF5E23;
+  color: #ff5e23;
   cursor: pointer;
-}
-
-.dropdown-icon {
-  font-size: 12px;
 }
 
 .store-list {
@@ -119,7 +163,7 @@ export default {
 }
 
 .store-item {
-  color: #FFD1A7;
+  color: #ffd1a7;
   text-decoration: none;
   font-size: 15px;
   display: block;
@@ -131,7 +175,7 @@ export default {
 }
 
 .store-item:hover {
-  background-color: #FFD1A7; /* 배경 색 변경 */
+  background-color: #ffd1a7;
   color: #ff4d4d;
   cursor: pointer;
 }
